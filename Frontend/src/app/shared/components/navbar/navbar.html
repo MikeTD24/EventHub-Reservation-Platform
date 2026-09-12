@@ -1,0 +1,28 @@
+<nav class="navbar">
+  <div class="navbar__content">
+    <a class="navbar__brand" routerLink="/evenements" aria-label="Accueil"> EventHub </a>
+
+    <div class="navbar__links">
+      <a routerLink="/evenements" routerLinkActive="active"> Événements </a>
+
+      @if (isAuthenticated()) {
+        <a routerLink="/mes-reservations" routerLinkActive="active"> Mes réservations </a>
+
+        @if (isAdmin()) {
+          <a routerLink="/admin" routerLinkActive="active"> Administration </a>
+        }
+
+        <span class="navbar__user" [title]="utilisateur()?.email ?? ''">
+          Bonjour,
+          <strong>{{ utilisateur()?.nom }}</strong>
+        </span>
+
+        <button class="navbar__logout" type="button" (click)="logout()">Déconnexion</button>
+      } @else {
+        <a routerLink="/inscription" routerLinkActive="active"> Inscription </a>
+
+        <a class="navbar__login" routerLink="/connexion" routerLinkActive="active"> Connexion </a>
+      }
+    </div>
+  </div>
+</nav>

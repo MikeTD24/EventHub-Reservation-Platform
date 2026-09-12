@@ -1,0 +1,154 @@
+.auth-page {
+  min-height: calc(100vh - 12rem);
+  display: grid;
+  place-items: center;
+  padding: 3rem 1rem;
+}
+
+.auth-card {
+  width: min(100%, 30rem);
+  padding: 2.25rem;
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 1.25rem;
+  box-shadow: 0 1.5rem 3.5rem rgb(30 58 138 / 12%);
+}
+
+.auth-header {
+  margin-bottom: 2rem;
+
+  h1 {
+    margin: 0.25rem 0 0.75rem;
+    color: #172554;
+    font-size: clamp(1.8rem, 5vw, 2.3rem);
+  }
+
+  p {
+    margin: 0;
+    color: #64748b;
+    line-height: 1.6;
+  }
+
+  .eyebrow {
+    color: #2563eb;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+}
+
+.auth-form {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.form-field {
+  display: grid;
+  gap: 0.5rem;
+
+  label {
+    color: #1e293b;
+    font-weight: 700;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    color: #172033;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.7rem;
+    outline: none;
+    transition:
+      border-color 150ms ease,
+      box-shadow 150ms ease,
+      background 150ms ease;
+
+    &:focus {
+      background: #ffffff;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 0.2rem rgb(37 99 235 / 15%);
+    }
+
+    &.invalid {
+      border-color: #dc2626;
+    }
+  }
+}
+
+.field-error {
+  color: #b91c1c;
+}
+
+.server-error {
+  padding: 0.85rem 1rem;
+  color: #991b1b;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.7rem;
+}
+
+.submit-button {
+  min-height: 3rem;
+  padding: 0.8rem 1rem;
+  color: #ffffff;
+  font-weight: 800;
+  background: #1e3a8a;
+  border: 0;
+  border-radius: 0.7rem;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    transform 150ms ease;
+
+  &:hover:not(:disabled) {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.65;
+  }
+}
+
+.auth-link {
+  margin: 1.5rem 0 0;
+  color: #64748b;
+  text-align: center;
+
+  a {
+    color: #1d4ed8;
+    font-weight: 800;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.success-message {
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  color: #166534;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 0.7rem;
+}
+
+.information-message {
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 0.7rem;
+}
+
+@media (max-width: 36rem) {
+  .auth-card {
+    padding: 1.5rem;
+  }
+}

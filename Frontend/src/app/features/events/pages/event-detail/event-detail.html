@@ -1,0 +1,170 @@
+<section class="detail-page">
+  <a class="back-link" routerLink="/evenements"> ← Retour aux événements </a>
+
+  @if (isLoading()) {
+    <div class="state-card" role="status">
+      <span class="loader"></span>
+      <h1>Chargement de l’événement</h1>
+    </div>
+  } @else if (errorMessage()) {
+    <div class="state-card state-card--error" role="alert">
+      <h1>Événement indisponible</h1>
+      <p>{{ errorMessage() }}</p>
+
+      <button type="button" (click)="loadEvenement()">Réessayer</button>
+    </div>
+  } @else if (evenement(); as evenement) {
+    <header class="event-hero">
+      <div>
+        <span class="category">
+          {{ evenement.categorie.nom }}
+        </span>
+
+        <h1>{{ evenement.titre }}</h1>
+
+        <p>
+          {{ evenement.description || 'Aucune description disponible.' }}
+        </p>
+      </div>
+
+      <div class="hero-availability">
+        <strong>{{ evenement.places_restantes }}</strong>
+        <span>places restantes</span>
+      </div>
+    </header>
+
+    <div class="detail-layout">
+      <article class="event-information">
+        <h2>Informations pratiques</h2>
+
+        <dl class="information-grid">
+          <div>
+            <dt>Date</dt>
+            <dd>
+              {{ evenement.date_evenement | date: 'dd/MM/yyyy' }}
+            </dd>
+          </div>
+
+          <div>
+            <dt>Heure</dt>
+            <dd>
+              {{ evenement.date_evenement | date: 'HH:mm' }}
+            </dd>
+          </div>
+
+          <div>
+            <dt>Lieu</dt>
+            <dd>{{ evenement.lieu }}</dd>
+          </div>
+
+          <div>
+            <dt>Catégorie</dt>
+            <dd>{{ evenement.categorie.nom }}</dd>
+          </div>
+        </dl>
+
+        <section class="capacity">
+          <div class="capacity__header">
+            <div>
+              <h2>Disponibilité</h2>
+              <p>
+                {{ evenement.places_occupees }}
+                place(s) réservée(s) sur
+                {{ evenement.places_totales }}.
+              </p>
+            </div>
+
+            <strong>
+              {{ evenement.places_restantes }}
+              disponible(s)
+            </strong>
+          </div>
+
+          <div class="capacity__track">
+            <span
+              [style.width.%]="(evenement.places_occupees / evenement.places_totales) * 100"
+            ></span>
+          </div>
+        </section>
+      </article>
+
+      <aside class="reservation-card">
+        <p class="eyebrow">Votre réservation</p>
+        <h2>Réserver des places</h2>
+
+        @if (isPast(evenement)) {
+          <div class="information-message">Cet événement a déjà commencé.</div>
+        } @else if (evenement.places_restantes === 0) {
+          <div class="information-message">Cet événement est complet.</div>
+        } @else if (!isAuthenticated()) {
+          <p>Connectez-vous pour réserver vos places.</p>
+
+          <a
+            class="primary-link"
+            routerLink="/connexion"
+            [queryParams]="{
+              returnUrl: '/evenements/' + evenement.id,
+            }"
+          >
+            Se connecter
+          </a>
+        } @else {
+          <form [formGroup]="reservationForm" (ngSubmit)="reserver()" novalidate>
+            <div class="form-field">
+              <label for="nombre_places"> Nombre de places </label>
+
+              <input
+                id="nombre_places"
+                type="number"
+                min="1"
+                step="1"
+                [max]="evenement.places_restantes"
+                formControlName="nombre_places"
+              />
+              @if (
+                reservationForm.controls.nombre_places.touched &&
+                (reservationForm.controls.nombre_places.hasError('required') ||
+                  reservationForm.controls.nombre_places.hasError('min'))
+              ) {
+                <small class="field-error"> Choisissez au moins une place. </small>
+              } @else if (
+                reservationForm.controls.nombre_places.touched &&
+                reservationForm.controls.nombre_places.hasError('max')
+              ) {
+                <small class="field-error">
+                  Il ne reste que
+                  {{ evenement.places_restantes }}
+                  place(s).
+                </small>
+              }
+            </div>
+
+            @if (reservationError()) {
+              <div class="message message--error" role="alert">
+                {{ reservationError() }}
+              </div>
+            }
+
+            @if (successMessage()) {
+              <div class="message message--success" role="status">
+                {{ successMessage() }}
+              </div>
+            }
+
+            <button class="reservation-button" type="submit" [disabled]="isSubmitting()">
+              @if (isSubmitting()) {
+                Réservation en cours…
+              } @else {
+                Confirmer la réservation
+              }
+            </button>
+          </form>
+
+          <a class="reservations-link" routerLink="/mes-reservations">
+            Consulter mes réservations
+          </a>
+        }
+      </aside>
+    </div>
+  }
+</section>

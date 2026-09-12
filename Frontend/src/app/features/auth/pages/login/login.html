@@ -1,0 +1,80 @@
+<section class="auth-page">
+  <article class="auth-card">
+    <header class="auth-header">
+      <p class="eyebrow">Welcome</p>
+      <h1>Connexion</h1>
+      <p>Connectez-vous pour gérer vos réservations.</p>
+    </header>
+
+    @if (registrationSucceeded) {
+      <div class="success-message" role="status">
+        Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter.
+      </div>
+    }
+
+    @if (sessionExpired) {
+      <div class="information-message" role="status">
+        Votre session a expiré. Reconnectez-vous pour poursuivre votre action.
+      </div>
+    }
+
+    <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="form-field">
+        <label for="email">Adresse email</label>
+
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          placeholder="alice@example.com"
+          [class.invalid]="form.controls.email.invalid && form.controls.email.touched"
+        />
+
+        @if (form.controls.email.touched && form.controls.email.hasError('required')) {
+          <small class="field-error"> L’adresse email est obligatoire. </small>
+        } @else if (form.controls.email.touched && form.controls.email.hasError('email')) {
+          <small class="field-error"> L’adresse email n’est pas valide. </small>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="mot_de_passe">Mot de passe</label>
+
+        <input
+          id="mot_de_passe"
+          type="password"
+          formControlName="mot_de_passe"
+          autocomplete="current-password"
+          placeholder="Votre mot de passe"
+          [class.invalid]="form.controls.mot_de_passe.invalid && form.controls.mot_de_passe.touched"
+        />
+
+        @if (
+          form.controls.mot_de_passe.touched && form.controls.mot_de_passe.hasError('required')
+        ) {
+          <small class="field-error"> Le mot de passe est obligatoire. </small>
+        }
+      </div>
+
+      @if (errorMessage()) {
+        <div class="server-error" role="alert">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <button class="submit-button" type="submit" [disabled]="isSubmitting()">
+        @if (isSubmitting()) {
+          Connexion en cours…
+        } @else {
+          Se connecter
+        }
+      </button>
+    </form>
+
+    <p class="auth-link">
+      Vous n’avez pas encore de compte ?
+      <a routerLink="/inscription">Créer un compte</a>
+    </p>
+  </article>
+</section>

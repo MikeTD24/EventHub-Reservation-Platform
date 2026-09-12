@@ -1,0 +1,116 @@
+<section class="auth-page">
+  <article class="auth-card">
+    <header class="auth-header">
+      <p class="eyebrow">Rejoignez EventHub</p>
+      <h1>Créer un compte</h1>
+      <p>Inscrivez-vous pour réserver vos prochains événements.</p>
+    </header>
+
+    <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="form-field">
+        <label for="nom">Nom</label>
+
+        <input
+          id="nom"
+          type="text"
+          formControlName="nom"
+          autocomplete="name"
+          placeholder="Votre nom"
+          [class.invalid]="form.controls.nom.invalid && form.controls.nom.touched"
+        />
+
+        @if (form.controls.nom.touched && form.controls.nom.hasError('required')) {
+          <small class="field-error"> Le nom est obligatoire. </small>
+        } @else if (form.controls.nom.touched && form.controls.nom.hasError('minlength')) {
+          <small class="field-error"> Le nom doit contenir au moins 2 caractères. </small>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="email">Adresse email</label>
+
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          placeholder="vous@example.com"
+          [class.invalid]="form.controls.email.invalid && form.controls.email.touched"
+        />
+
+        @if (form.controls.email.touched && form.controls.email.hasError('required')) {
+          <small class="field-error"> L’adresse email est obligatoire. </small>
+        } @else if (form.controls.email.touched && form.controls.email.hasError('email')) {
+          <small class="field-error"> L’adresse email n’est pas valide. </small>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="mot_de_passe">Mot de passe</label>
+
+        <input
+          id="mot_de_passe"
+          type="password"
+          formControlName="mot_de_passe"
+          autocomplete="new-password"
+          placeholder="Au moins 8 caractères"
+          [class.invalid]="form.controls.mot_de_passe.invalid && form.controls.mot_de_passe.touched"
+        />
+
+        @if (
+          form.controls.mot_de_passe.touched && form.controls.mot_de_passe.hasError('required')
+        ) {
+          <small class="field-error"> Le mot de passe est obligatoire. </small>
+        } @else if (
+          form.controls.mot_de_passe.touched && form.controls.mot_de_passe.hasError('minlength')
+        ) {
+          <small class="field-error"> Le mot de passe doit contenir au moins 8 caractères. </small>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="confirmation_mot_de_passe"> Confirmation du mot de passe </label>
+
+        <input
+          id="confirmation_mot_de_passe"
+          type="password"
+          formControlName="confirmation_mot_de_passe"
+          autocomplete="new-password"
+          placeholder="Répétez votre mot de passe"
+          [class.invalid]="
+            form.controls.confirmation_mot_de_passe.touched &&
+            (form.controls.confirmation_mot_de_passe.invalid || passwordsDifferent())
+          "
+        />
+
+        @if (
+          form.controls.confirmation_mot_de_passe.touched &&
+          form.controls.confirmation_mot_de_passe.hasError('required')
+        ) {
+          <small class="field-error"> La confirmation est obligatoire. </small>
+        } @else if (form.controls.confirmation_mot_de_passe.touched && passwordsDifferent()) {
+          <small class="field-error"> Les mots de passe ne correspondent pas. </small>
+        }
+      </div>
+
+      @if (errorMessage()) {
+        <div class="server-error" role="alert">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <button class="submit-button" type="submit" [disabled]="isSubmitting()">
+        @if (isSubmitting()) {
+          Création du compte…
+        } @else {
+          Créer mon compte
+        }
+      </button>
+    </form>
+
+    <p class="auth-link">
+      Vous possédez déjà un compte ?
+      <a routerLink="/connexion">Se connecter</a>
+    </p>
+  </article>
+</section>

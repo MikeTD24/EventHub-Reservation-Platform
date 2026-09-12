@@ -1,0 +1,12 @@
+# Dépendances installées par npm
+node_modules/
+
+# Variables sensibles locales
+.env
+
+# Fichiers de logs
+*.log
+npm-debug.log*
+
+# Rapports de tests
+coverage/

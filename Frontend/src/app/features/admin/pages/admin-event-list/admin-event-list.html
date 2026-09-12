@@ -1,0 +1,206 @@
+<section class="admin-events">
+  <!-- En-tête et accès aux autres outils administratifs -->
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Administration</p>
+      <h1>Gestion des événements</h1>
+      <p>Consultez, créez et gérez les événements publiés sur EventHub.</p>
+    </div>
+
+    <div class="header-actions">
+      <a class="button button--secondary" routerLink="/admin/categories"> Gérer les catégories </a>
+
+      <a class="button button--primary" routerLink="/admin/evenements/nouveau">
+        Créer un événement
+      </a>
+    </div>
+  </header>
+
+  @if (actionMessage()) {
+    <div class="global-message global-message--success" role="status">
+      {{ actionMessage() }}
+    </div>
+  }
+
+  @if (actionError()) {
+    <div class="global-message global-message--error" role="alert">
+      {{ actionError() }}
+    </div>
+  }
+
+  <!-- Indicateurs généraux calculés côté Angular -->
+  @if (!isLoading() && !errorMessage()) {
+    <section class="statistics" aria-label="Statistiques des événements">
+      <article>
+        <span>Événements</span>
+        <strong>{{ evenementCount() }}</strong>
+      </article>
+
+      <article>
+        <span>À venir</span>
+        <strong>{{ upcomingCount() }}</strong>
+      </article>
+
+      <article>
+        <span>Complets</span>
+        <strong>{{ completeCount() }}</strong>
+      </article>
+
+      <article>
+        <span>Participants attendus</span>
+        <strong>{{ participantCount() }}</strong>
+      </article>
+    </section>
+  }
+
+  <section class="events-panel">
+    <div class="events-panel__header">
+      <div>
+        <p class="eyebrow">Programmation</p>
+        <h2>Événements existants</h2>
+      </div>
+
+      <button
+        class="refresh-button"
+        type="button"
+        [disabled]="isLoading()"
+        (click)="loadEvenements()"
+      >
+        Actualiser
+      </button>
+    </div>
+
+    @if (isLoading()) {
+      <div class="state-card" role="status">
+        <span class="loader"></span>
+        <p>Chargement des événements...</p>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="state-card state-card--error" role="alert">
+        <p>{{ errorMessage() }}</p>
+
+        <button type="button" (click)="loadEvenements()">Réessayer</button>
+      </div>
+    } @else if (evenements().length === 0) {
+      <div class="state-card">
+        <h2>Aucun événement</h2>
+        <p>Créez le premier événement de la plateforme.</p>
+      </div>
+    } @else {
+      <!-- Une carte administrative par événement -->
+      <div class="event-list">
+        @for (evenement of evenements(); track evenement.id) {
+          <article class="event-card">
+            <header class="event-card__header">
+              <div class="badges">
+                <span class="category">
+                  {{ evenement.categorie.nom }}
+                </span>
+
+                <span
+                  class="status"
+                  [class.status--available]="!isPast(evenement) && evenement.places_restantes > 0"
+                  [class.status--full]="evenement.places_restantes === 0"
+                  [class.status--past]="isPast(evenement)"
+                >
+                  @if (isPast(evenement)) {
+                    Terminé
+                  } @else if (evenement.places_restantes === 0) {
+                    Complet
+                  } @else {
+                    Disponible
+                  }
+                </span>
+              </div>
+
+              <span class="event-number"> Événement no {{ evenement.id }} </span>
+            </header>
+
+            <div class="event-card__content">
+              <div>
+                <h3>{{ evenement.titre }}</h3>
+
+                <p class="description">
+                  {{ evenement.description || 'Aucune description disponible.' }}
+                </p>
+              </div>
+
+              <dl class="event-details">
+                <div>
+                  <dt>Date</dt>
+                  <dd>
+                    {{ evenement.date_evenement | date: 'dd/MM/yyyy à HH:mm' }}
+                  </dd>
+                </div>
+
+                <div>
+                  <dt>Lieu</dt>
+                  <dd>{{ evenement.lieu }}</dd>
+                </div>
+
+                <div>
+                  <dt>Capacité</dt>
+                  <dd>{{ evenement.places_totales }} places</dd>
+                </div>
+              </dl>
+
+              <div class="occupancy">
+                <div class="occupancy__labels">
+                  <span>Remplissage : {{ fillRate(evenement) }} %</span>
+
+                  <strong>
+                    {{ evenement.places_occupees }} /
+                    {{ evenement.places_totales }}
+                  </strong>
+                </div>
+
+                <div
+                  class="progress"
+                  role="progressbar"
+                  aria-label="Taux de remplissage"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  [attr.aria-valuenow]="fillRate(evenement)"
+                >
+                  <span [style.width.%]="fillRate(evenement)"></span>
+                </div>
+
+                <p>
+                  {{ evenement.places_restantes }}
+                  place(s) restante(s)
+                </p>
+              </div>
+            </div>
+
+            <footer class="event-card__actions">
+              <a class="text-link" [routerLink]="['/evenements', evenement.id]"> Voir </a>
+
+              <a
+                class="button button--secondary"
+                [routerLink]="['/admin/evenements', evenement.id, 'reservations']"
+              >
+                Participants
+              </a>
+
+              <a
+                class="button button--secondary"
+                [routerLink]="['/admin/evenements', evenement.id, 'modifier']"
+              >
+                Modifier
+              </a>
+
+              <button
+                class="button button--danger"
+                type="button"
+                [disabled]="deletingId() === evenement.id"
+                (click)="deleteEvenement(evenement)"
+              >
+                {{ deletingId() === evenement.id ? 'Suppression...' : 'Supprimer' }}
+              </button>
+            </footer>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</section>

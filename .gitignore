@@ -1,0 +1,23 @@
+# Dépendances, builds et caches
+**/node_modules/
+**/dist/
+**/.angular/
+**/coverage/
+
+# Variables d’environnement locales
+**/.env
+!**/.env.example
+
+# Logs et fichiers temporaires
+*.log
+tmp/
+
+# Éditeurs et systèmes
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Documents pédagogiques locaux
+Etape Labo_reserv_event.md
+Labo*.pdf

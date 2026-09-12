@@ -1,0 +1,163 @@
+<section class="admin-categories">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Administration</p>
+      <h1>Gestion des catégories</h1>
+      <p>Créez, renommez ou supprimez les catégories utilisées par les événements.</p>
+    </div>
+
+    @if (!isLoading()) {
+      <div class="category-count">
+        <strong>{{ categoriesCount() }}</strong>
+        <span>catégorie(s)</span>
+      </div>
+    }
+  </header>
+
+  @if (actionMessage()) {
+    <div class="global-message global-message--success" role="status">
+      {{ actionMessage() }}
+    </div>
+  }
+
+  @if (actionError()) {
+    <div class="global-message global-message--error" role="alert">
+      {{ actionError() }}
+    </div>
+  }
+
+  <div class="admin-layout">
+    <section class="form-card">
+      <p class="eyebrow">
+        {{ isEditing() ? 'Modification' : 'Nouvelle catégorie' }}
+      </p>
+
+      <h2>
+        {{ isEditing() ? 'Renommer la catégorie' : 'Ajouter une catégorie' }}
+      </h2>
+
+      <form [formGroup]="categorieForm" (ngSubmit)="submit()">
+        <div class="form-field">
+          <label for="category-name"> Nom de la catégorie </label>
+
+          <input
+            id="category-name"
+            type="text"
+            maxlength="100"
+            autocomplete="off"
+            formControlName="nom"
+            placeholder="Ex. Conférence"
+          />
+
+          @if (
+            categorieForm.controls.nom.touched &&
+            (categorieForm.controls.nom.hasError('required') ||
+              categorieForm.controls.nom.hasError('pattern'))
+          ) {
+            <small>Le nom de la catégorie est obligatoire.</small>
+          } @else if (
+            categorieForm.controls.nom.touched && categorieForm.controls.nom.hasError('minlength')
+          ) {
+            <small>Le nom doit contenir au moins 2 caractères.</small>
+          } @else if (
+            categorieForm.controls.nom.touched && categorieForm.controls.nom.hasError('maxlength')
+          ) {
+            <small>Le nom ne peut pas dépasser 100 caractères.</small>
+          }
+        </div>
+
+        <div class="form-actions">
+          <button class="button button--primary" type="submit" [disabled]="isSubmitting()">
+            @if (isSubmitting()) {
+              Traitement...
+            } @else if (isEditing()) {
+              Enregistrer
+            } @else {
+              Ajouter
+            }
+          </button>
+
+          @if (isEditing()) {
+            <button
+              class="button button--secondary"
+              type="button"
+              [disabled]="isSubmitting()"
+              (click)="cancelEditing()"
+            >
+              Annuler
+            </button>
+          }
+        </div>
+      </form>
+    </section>
+
+    <section class="list-card">
+      <div class="list-card__header">
+        <div>
+          <p class="eyebrow">Catalogue</p>
+          <h2>Catégories existantes</h2>
+        </div>
+
+        <button
+          class="refresh-button"
+          type="button"
+          [disabled]="isLoading()"
+          (click)="loadCategories()"
+        >
+          Actualiser
+        </button>
+      </div>
+
+      @if (isLoading()) {
+        <div class="state-card" role="status">
+          <span class="loader"></span>
+          <p>Chargement des catégories...</p>
+        </div>
+      } @else if (errorMessage()) {
+        <div class="state-card state-card--error" role="alert">
+          <p>{{ errorMessage() }}</p>
+
+          <button type="button" (click)="loadCategories()">Réessayer</button>
+        </div>
+      } @else if (categories().length === 0) {
+        <div class="state-card">
+          <p>Aucune catégorie n’a encore été créée.</p>
+        </div>
+      } @else {
+        <div class="category-list">
+          @for (categorie of categories(); track categorie.id) {
+            <article
+              class="category-item"
+              [class.category-item--editing]="editingId() === categorie.id"
+            >
+              <div>
+                <span>Catégorie no {{ categorie.id }}</span>
+                <strong>{{ categorie.nom }}</strong>
+              </div>
+
+              <div class="category-actions">
+                <button
+                  class="button button--secondary"
+                  type="button"
+                  [disabled]="deletingId() === categorie.id || isSubmitting()"
+                  (click)="startEditing(categorie)"
+                >
+                  Modifier
+                </button>
+
+                <button
+                  class="button button--danger"
+                  type="button"
+                  [disabled]="deletingId() === categorie.id || isSubmitting()"
+                  (click)="deleteCategorie(categorie)"
+                >
+                  {{ deletingId() === categorie.id ? 'Suppression...' : 'Supprimer' }}
+                </button>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+  </div>
+</section>

@@ -1,0 +1,179 @@
+<section class="reservations-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Espace personnel</p>
+      <h1>Mes réservations</h1>
+      <p>Consultez, modifiez ou annulez vos réservations.</p>
+    </div>
+
+    @if (!isLoading()) {
+      <div class="reservation-count">
+        <strong>{{ activeCount() }}</strong>
+        <span>active(s)</span>
+      </div>
+    }
+  </header>
+
+  @if (actionMessage()) {
+    <div class="global-message global-message--success" role="status">
+      {{ actionMessage() }}
+    </div>
+  }
+
+  @if (actionError()) {
+    <div class="global-message global-message--error" role="alert">
+      {{ actionError() }}
+    </div>
+  }
+
+  @if (isLoading()) {
+    <div class="state-card" role="status">
+      <span class="loader"></span>
+      <h2>Chargement de vos réservations</h2>
+    </div>
+  } @else if (errorMessage()) {
+    <div class="state-card state-card--error" role="alert">
+      <h2>Chargement impossible</h2>
+      <p>{{ errorMessage() }}</p>
+
+      <button type="button" (click)="loadReservations()">Réessayer</button>
+    </div>
+  } @else if (reservations().length === 0) {
+    <div class="state-card">
+      <h2>Aucune réservation</h2>
+      <p>Découvrez nos événements et réservez vos premières places.</p>
+
+      <a routerLink="/evenements"> Voir les événements </a>
+    </div>
+  } @else {
+    <div class="reservations-list">
+      @for (reservation of reservations(); track reservation.id) {
+        <article class="reservation-card">
+          <header class="reservation-card__header">
+            <div>
+              <span
+                class="status"
+                [class.status--confirmed]="reservation.statut === 'confirmee'"
+                [class.status--cancelled]="reservation.statut === 'annulee'"
+              >
+                {{ reservation.statut === 'confirmee' ? 'Confirmée' : 'Annulée' }}
+              </span>
+
+              <span class="reservation-number"> Réservation nº {{ reservation.id }} </span>
+            </div>
+
+            <strong class="places">
+              {{ reservation.nombre_places }}
+              place{{ reservation.nombre_places > 1 ? 's' : '' }}
+            </strong>
+          </header>
+
+          @if (reservation.evenement; as evenement) {
+            <div class="reservation-card__content">
+              <div>
+                <p class="category">
+                  {{ evenement.categorie.nom }}
+                </p>
+
+                <h2>{{ evenement.titre }}</h2>
+
+                <dl class="event-details">
+                  <div>
+                    <dt>Date</dt>
+                    <dd>
+                      {{ evenement.date_evenement | date: 'dd/MM/yyyy à HH:mm' }}
+                    </dd>
+                  </div>
+
+                  <div>
+                    <dt>Lieu</dt>
+                    <dd>{{ evenement.lieu }}</dd>
+                  </div>
+                </dl>
+              </div>
+
+              <a class="details-link" [routerLink]="['/evenements', evenement.id]">
+                Voir l’événement
+              </a>
+            </div>
+          } @else {
+            <p>Les informations de l’événement sont indisponibles.</p>
+          }
+
+          @if (editingId() === reservation.id) {
+            <form
+              class="edit-form"
+              [formGroup]="editForm"
+              (ngSubmit)="saveReservation(reservation)"
+            >
+              <div class="form-field">
+                <label for="places-{{ reservation.id }}"> Nouveau nombre de places </label>
+
+                <input
+                  id="places-{{ reservation.id }}"
+                  type="number"
+                  min="1"
+                  step="1"
+                  [max]="maximumPlaces(reservation)"
+                  formControlName="nombre_places"
+                />
+
+                @if (
+                  editForm.controls.nombre_places.touched &&
+                  editForm.controls.nombre_places.hasError('min')
+                ) {
+                  <small>Choisissez au moins une place.</small>
+                } @else if (
+                  editForm.controls.nombre_places.touched &&
+                  editForm.controls.nombre_places.hasError('max')
+                ) {
+                  <small>
+                    Maximum disponible :
+                    {{ maximumPlaces(reservation) }}.
+                  </small>
+                }
+              </div>
+
+              <div class="edit-actions">
+                <button
+                  class="button button--primary"
+                  type="submit"
+                  [disabled]="actionId() === reservation.id"
+                >
+                  Enregistrer
+                </button>
+
+                <button class="button button--secondary" type="button" (click)="stopEditing()">
+                  Fermer
+                </button>
+              </div>
+            </form>
+          } @else if (canManage(reservation)) {
+            <footer class="reservation-card__actions">
+              <button
+                class="button button--secondary"
+                type="button"
+                (click)="startEditing(reservation)"
+              >
+                Modifier
+              </button>
+
+              <button
+                class="button button--danger"
+                type="button"
+                [disabled]="actionId() === reservation.id"
+                (click)="cancelReservation(reservation)"
+              >
+                Annuler
+              </button>
+            </footer>
+          } @else if (reservation.statut === 'confirmee' && isPast(reservation)) {
+            <footer class="reservation-card__notice">
+              Cet événement a déjà commencé : les modifications sont fermées.
+            </footer>
+          }
+        </article>
+      }
+    </div>
+  }
+</section>

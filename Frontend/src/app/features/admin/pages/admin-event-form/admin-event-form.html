@@ -1,0 +1,218 @@
+<section class="admin-event-form">
+  <a class="back-link" routerLink="/admin/evenements"> ← Retour à la gestion des événements </a>
+
+  <!-- Le titre et les explications dépendent du mode courant. -->
+  <header class="page-header">
+    <p class="eyebrow">Administration</p>
+
+    <h1>
+      {{ isEditMode() ? 'Modifier l’événement' : 'Créer un événement' }}
+    </h1>
+
+    <p>
+      @if (isEditMode()) {
+        Mettez à jour les informations et la capacité de cet événement.
+      } @else {
+        Complétez les informations du nouvel événement.
+      }
+    </p>
+  </header>
+
+  @if (isLoading()) {
+    <div class="state-card" role="status">
+      <span class="loader"></span>
+      <p>Chargement du formulaire...</p>
+    </div>
+  } @else if (errorMessage()) {
+    <div class="state-card state-card--error" role="alert">
+      <p>{{ errorMessage() }}</p>
+
+      <a routerLink="/admin/evenements"> Retour à la liste </a>
+    </div>
+  } @else {
+    @if (categories().length === 0) {
+      <div class="warning-card" role="alert">
+        <strong>Aucune catégorie disponible.</strong>
+
+        <p>Créez d’abord une catégorie avant d’ajouter un événement.</p>
+
+        <a routerLink="/admin/categories"> Gérer les catégories </a>
+      </div>
+    }
+
+    <form class="event-form" [formGroup]="evenementForm" (ngSubmit)="submit()">
+      <!-- Informations générales -->
+      <section class="form-section">
+        <div class="section-heading">
+          <span>01</span>
+
+          <div>
+            <h2>Informations générales</h2>
+            <p>Présentez clairement l’événement aux visiteurs.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field form-field--wide">
+            <label for="event-title">Titre</label>
+
+            <input
+              id="event-title"
+              type="text"
+              maxlength="150"
+              formControlName="titre"
+              placeholder="Ex. Festival Jazz de Bruxelles"
+            />
+
+            @if (
+              evenementForm.controls.titre.touched &&
+              evenementForm.controls.titre.hasError('required')
+            ) {
+              <small>Le titre est obligatoire.</small>
+            } @else if (
+              evenementForm.controls.titre.touched &&
+              evenementForm.controls.titre.hasError('maxlength')
+            ) {
+              <small> Le titre ne peut pas dépasser 150 caractères. </small>
+            }
+          </div>
+
+          <div class="form-field">
+            <label for="event-location">Lieu</label>
+
+            <input
+              id="event-location"
+              type="text"
+              maxlength="255"
+              formControlName="lieu"
+              placeholder="Ex. Bruxelles-Centre"
+            />
+
+            @if (
+              evenementForm.controls.lieu.touched &&
+              evenementForm.controls.lieu.hasError('required')
+            ) {
+              <small>Le lieu est obligatoire.</small>
+            }
+          </div>
+
+          <div class="form-field">
+            <label for="event-category">Catégorie</label>
+
+            <select id="event-category" formControlName="id_categorie">
+              <option [ngValue]="0" disabled>Sélectionnez une catégorie</option>
+
+              @for (categorie of categories(); track categorie.id) {
+                <option [ngValue]="categorie.id">
+                  {{ categorie.nom }}
+                </option>
+              }
+            </select>
+
+            @if (
+              evenementForm.controls.id_categorie.touched &&
+              evenementForm.controls.id_categorie.invalid
+            ) {
+              <small> Sélectionnez une catégorie valide. </small>
+            }
+          </div>
+
+          <div class="form-field form-field--wide">
+            <label for="event-description"> Description </label>
+
+            <textarea
+              id="event-description"
+              rows="5"
+              formControlName="description"
+              placeholder="Décrivez le contenu de l’événement..."
+            ></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- Planification et capacité -->
+      <section class="form-section">
+        <div class="section-heading">
+          <span>02</span>
+
+          <div>
+            <h2>Planification et capacité</h2>
+            <p>Définissez la date et le nombre total de places.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="event-date"> Date et heure </label>
+
+            <input id="event-date" type="datetime-local" formControlName="date_evenement" />
+
+            @if (
+              evenementForm.controls.date_evenement.touched &&
+              evenementForm.controls.date_evenement.invalid
+            ) {
+              <small>La date et l’heure sont obligatoires.</small>
+            }
+          </div>
+
+          <div class="form-field">
+            <label for="event-capacity"> Nombre total de places </label>
+
+            <input
+              id="event-capacity"
+              type="number"
+              step="1"
+              [min]="minimumCapacity()"
+              formControlName="places_totales"
+            />
+
+            @if (
+              evenementForm.controls.places_totales.touched &&
+              evenementForm.controls.places_totales.hasError('min')
+            ) {
+              <small>
+                La capacité minimale est de
+                {{ minimumCapacity() }} place(s).
+              </small>
+            } @else if (
+              evenementForm.controls.places_totales.touched &&
+              evenementForm.controls.places_totales.hasError('pattern')
+            ) {
+              <small>La capacité doit être un nombre entier.</small>
+            }
+
+            @if (isEditMode() && placesOccupees() > 0) {
+              <p class="field-information">
+                {{ placesOccupees() }} place(s) sont déjà réservée(s).
+              </p>
+            }
+          </div>
+        </div>
+      </section>
+
+      @if (submitError()) {
+        <div class="submit-error" role="alert">
+          {{ submitError() }}
+        </div>
+      }
+
+      <footer class="form-actions">
+        <a class="button button--secondary" routerLink="/admin/evenements"> Annuler </a>
+
+        <button
+          class="button button--primary"
+          type="submit"
+          [disabled]="isSubmitting() || categories().length === 0"
+        >
+          @if (isSubmitting()) {
+            Enregistrement...
+          } @else if (isEditMode()) {
+            Enregistrer les modifications
+          } @else {
+            Créer l’événement
+          }
+        </button>
+      </footer>
+    </form>
+  }
+</section>

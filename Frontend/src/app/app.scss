@@ -1,0 +1,17 @@
+.app-main {
+  width: min(1120px, calc(100% - 2rem));
+  min-height: calc(100vh - 145px);
+  margin: 0 auto;
+  padding: 2.5rem 0;
+}
+
+.app-footer {
+  padding: 1.25rem;
+  color: #64748b;
+  text-align: center;
+  border-top: 1px solid #e2e8f0;
+
+  p {
+    margin: 0;
+  }
+}

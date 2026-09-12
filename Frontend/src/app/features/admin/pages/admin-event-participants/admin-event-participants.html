@@ -1,0 +1,139 @@
+<section class="participants-page">
+  <a class="back-link" routerLink="/admin/evenements"> ← Retour à la gestion des événements </a>
+
+  @if (isLoading()) {
+    <div class="state-card" role="status">
+      <span class="loader"></span>
+      <p>Chargement des participants...</p>
+    </div>
+  } @else if (errorMessage()) {
+    <div class="state-card state-card--error" role="alert">
+      <p>{{ errorMessage() }}</p>
+
+      <a routerLink="/admin/evenements">Retour à la liste</a>
+    </div>
+  } @else if (evenement(); as currentEvent) {
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Administration</p>
+        <h1>Participants</h1>
+        <p>Consultez les réservations associées à cet événement.</p>
+      </div>
+
+      <button class="refresh-button" type="button" (click)="loadParticipants(currentEvent.id)">
+        Actualiser
+      </button>
+    </header>
+
+    <section class="event-summary">
+      <div>
+        <span class="category-badge">
+          {{ currentEvent.categorie.nom }}
+        </span>
+
+        <h2>{{ currentEvent.titre }}</h2>
+
+        <p>
+          {{ currentEvent.date_evenement | date: 'dd/MM/yyyy à HH:mm' }}
+          · {{ currentEvent.lieu }}
+        </p>
+      </div>
+
+      <div class="event-summary__capacity">
+        <strong> {{ placesReservees() }} / {{ currentEvent.places_totales }} </strong>
+        <span>places réservées</span>
+      </div>
+    </section>
+
+    <section class="statistics" aria-label="Statistiques des participants">
+      <article class="stat-card">
+        <span>Participants actifs</span>
+        <strong>{{ participantsCount() }}</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>Réservations actives</span>
+        <strong>{{ reservationsConfirmees().length }}</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>Places réservées</span>
+        <strong>{{ placesReservees() }}</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>Réservations annulées</span>
+        <strong>{{ reservationsAnnuleesCount() }}</strong>
+      </article>
+    </section>
+
+    <section class="participants-card">
+      <header class="participants-card__header">
+        <div>
+          <p class="eyebrow">Inscriptions</p>
+          <h2>Liste des réservations</h2>
+        </div>
+
+        <a class="event-link" [routerLink]="['/evenements', currentEvent.id]"> Voir l’événement </a>
+      </header>
+
+      @if (reservations().length === 0) {
+        <div class="empty-state">
+          <strong>Aucune réservation</strong>
+          <p>Cet événement ne possède encore aucun participant.</p>
+        </div>
+      } @else {
+        <div class="reservation-list">
+          @for (reservation of reservations(); track reservation.id) {
+            <article
+              class="reservation-item"
+              [class.reservation-item--cancelled]="reservation.statut === 'annulee'"
+            >
+              <div class="participant-identity">
+                <span class="participant-avatar">
+                  {{ reservation.utilisateur.nom.charAt(0).toUpperCase() }}
+                </span>
+
+                <div>
+                  <strong>{{ reservation.utilisateur.nom }}</strong>
+
+                  <a [href]="'mailto:' + reservation.utilisateur.email">
+                    {{ reservation.utilisateur.email }}
+                  </a>
+                </div>
+              </div>
+
+              <div class="reservation-information">
+                <span>Réservation</span>
+                <strong>n° {{ reservation.id }}</strong>
+              </div>
+
+              <div class="reservation-information">
+                <span>Date</span>
+                <strong>
+                  {{ reservation.date_reservation | date: 'dd/MM/yyyy à HH:mm' }}
+                </strong>
+              </div>
+
+              <div class="reservation-information">
+                <span>Places</span>
+                <strong>
+                  {{ reservation.nombre_places }}
+                  {{ reservation.nombre_places > 1 ? 'places' : 'place' }}
+                </strong>
+              </div>
+
+              <span
+                class="status"
+                [class.status--confirmed]="reservation.statut === 'confirmee'"
+                [class.status--cancelled]="reservation.statut === 'annulee'"
+              >
+                {{ reservation.statut === 'confirmee' ? 'Confirmée' : 'Annulée' }}
+              </span>
+            </article>
+          }
+        </div>
+      }
+    </section>
+  }
+</section>
