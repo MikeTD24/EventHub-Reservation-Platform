@@ -20,6 +20,12 @@ La base neuve est automatiquement alimentée avec plusieurs catégories et évé
 
 > Le plan gratuit Render convient à une démonstration de portfolio : le service peut nécessiter environ une minute pour se réveiller après une période d’inactivité. La base PostgreSQL gratuite expire après 30 jours.
 
+## Aperçu
+
+![Agenda public EventHub avec filtres et disponibilités](docs/screenshots/event-list.png)
+
+_Agenda public : événements terminés, complets et disponibles, avec filtres dynamiques._
+
 ## Fonctionnalités
 
 ### Visiteur et utilisateur
