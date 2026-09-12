@@ -30,6 +30,10 @@ _Agenda public : événements terminés, complets et disponibles, avec filtres d
 
 _Administration : indicateurs globaux, taux de remplissage et gestion complète des événements._
 
+![Participants et réservations d’un événement dans EventHub](docs/screenshots/participants.png)
+
+_Suivi administratif : participants uniques, réservations actives ou annulées et nombre de places réservées._
+
 ## Fonctionnalités
 
 ### Visiteur et utilisateur
