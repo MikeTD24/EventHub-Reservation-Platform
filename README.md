@@ -6,9 +6,19 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql&logoColor=white)
 ![Status](https://img.shields.io/badge/status-functional-15803d)
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/MikeTD24/EventHub-Reservation-Platform)
+
 EventHub est une application full-stack de gestion et de réservation d’événements. Elle propose un espace public pour consulter les événements, un espace personnel pour gérer ses réservations et une administration complète pour piloter les catégories, les événements et leurs participants.
 
 Ce projet met notamment en pratique une API REST sécurisée par JWT, les formulaires réactifs Angular, les règles d’intégrité métier et les transactions Sequelize.
+
+## Démo
+
+Le bouton **Deploy to Render** crée une instance complète : application Angular, API Express et base PostgreSQL. Lors de la création du Blueprint, Render demande uniquement le mot de passe du compte administrateur de démonstration (`admin@eventhub-demo.test`).
+
+La base neuve est automatiquement alimentée avec plusieurs catégories et événements datés relativement au jour du déploiement. Elle contient notamment un événement passé et un événement complet pour permettre de tester immédiatement les trois filtres.
+
+> Le plan gratuit Render convient à une démonstration de portfolio : le service peut nécessiter environ une minute pour se réveiller après une période d’inactivité. La base PostgreSQL gratuite expire après 30 jours.
 
 ## Fonctionnalités
 
@@ -70,13 +80,13 @@ EventHub/
 
 ## Technologies
 
-| Frontend | Backend | Données et outils |
-| --- | --- | --- |
-| Angular 22 | Node.js | PostgreSQL |
-| TypeScript | Express 5 | Sequelize 6 |
-| Reactive Forms | JWT | Prettier |
-| Signals Angular | bcrypt | Postman |
-| SCSS responsive | CORS | npm |
+| Frontend        | Backend   | Données et outils |
+| --------------- | --------- | ----------------- |
+| Angular 22      | Node.js   | PostgreSQL        |
+| TypeScript      | Express 5 | Sequelize 6       |
+| Reactive Forms  | JWT       | Prettier          |
+| Signals Angular | bcrypt    | Postman           |
+| SCSS responsive | CORS      | npm               |
 
 ## Installation locale
 
@@ -124,6 +134,8 @@ npm start
 
 Ouvrir ensuite `http://localhost:4200`.
 
+En développement, Angular redirige automatiquement les appels `/api` vers le backend local grâce à `Frontend/proxy.conf.json`. En production, Express sert le build Angular et l’API sous la même origine.
+
 ### 4. Accès administrateur
 
 L’inscription publique attribue volontairement le rôle `user`. Pour un environnement local, inscrire un compte, puis lui attribuer le rôle administrateur dans PostgreSQL :
@@ -136,22 +148,22 @@ WHERE email = 'admin@example.com';
 
 ## Principaux endpoints
 
-| Méthode | Endpoint | Accès | Description |
-| --- | --- | --- | --- |
-| `POST` | `/api/auth/register` | Public | Inscription |
-| `POST` | `/api/auth/login` | Public | Connexion et création du JWT |
-| `GET` | `/api/events` | Public | Liste des événements et disponibilités |
-| `GET` | `/api/events/:id` | Public | Détail d’un événement |
-| `POST` | `/api/events` | Admin | Création d’un événement |
-| `PUT` | `/api/events/:id` | Admin | Modification d’un événement |
-| `DELETE` | `/api/events/:id` | Admin | Suppression d’un événement |
-| `GET` | `/api/events/:id/reservations` | Admin | Participants d’un événement |
-| `GET` | `/api/categories` | Authentifié | Liste des catégories |
-| `POST / PUT / DELETE` | `/api/categories` | Admin | Gestion des catégories |
-| `GET` | `/api/reservations` | Authentifié | Réservations du compte connecté |
-| `POST` | `/api/reservations` | Authentifié | Création d’une réservation |
-| `PUT` | `/api/reservations/:id` | Propriétaire | Modification du nombre de places |
-| `PATCH` | `/api/reservations/:id/cancel` | Propriétaire | Annulation d’une réservation |
+| Méthode               | Endpoint                       | Accès        | Description                            |
+| --------------------- | ------------------------------ | ------------ | -------------------------------------- |
+| `POST`                | `/api/auth/register`           | Public       | Inscription                            |
+| `POST`                | `/api/auth/login`              | Public       | Connexion et création du JWT           |
+| `GET`                 | `/api/events`                  | Public       | Liste des événements et disponibilités |
+| `GET`                 | `/api/events/:id`              | Public       | Détail d’un événement                  |
+| `POST`                | `/api/events`                  | Admin        | Création d’un événement                |
+| `PUT`                 | `/api/events/:id`              | Admin        | Modification d’un événement            |
+| `DELETE`              | `/api/events/:id`              | Admin        | Suppression d’un événement             |
+| `GET`                 | `/api/events/:id/reservations` | Admin        | Participants d’un événement            |
+| `GET`                 | `/api/categories`              | Authentifié  | Liste des catégories                   |
+| `POST / PUT / DELETE` | `/api/categories`              | Admin        | Gestion des catégories                 |
+| `GET`                 | `/api/reservations`            | Authentifié  | Réservations du compte connecté        |
+| `POST`                | `/api/reservations`            | Authentifié  | Création d’une réservation             |
+| `PUT`                 | `/api/reservations/:id`        | Propriétaire | Modification du nombre de places       |
+| `PATCH`               | `/api/reservations/:id/cancel` | Propriétaire | Annulation d’une réservation           |
 
 ## Qualité du code
 
@@ -165,6 +177,18 @@ npm run build
 ```
 
 Les principaux parcours ont aussi été validés manuellement avec Postman et les outils de développement du navigateur.
+
+## Déploiement
+
+Le fichier `render.yaml` décrit l’infrastructure de démonstration :
+
+- un service web Node.js qui compile Angular puis démarre Express ;
+- une base PostgreSQL privée ;
+- la génération automatique du secret JWT ;
+- la création idempotente des tables et des données de démonstration ;
+- un contrôle de santé sur `/api/health`.
+
+Après un déploiement réussi, l’application dispose automatiquement d’une adresse publique sécurisée en `onrender.com`.
 
 ## Améliorations possibles
 

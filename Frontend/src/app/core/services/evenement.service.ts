@@ -11,7 +11,7 @@ import { Evenement, EvenementPayload, EvenementResponse } from '../models/evenem
 export class EvenementService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/api/events';
+  private readonly apiUrl = '/api/events';
 
   /**
    * Récupère tous les événements.

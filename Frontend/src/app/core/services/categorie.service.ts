@@ -11,7 +11,7 @@ import { Categorie, CategoriePayload, CategorieResponse } from '../models/catego
 export class CategorieService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/api/categories';
+  private readonly apiUrl = '/api/categories';
 
   /**
    * Récupère toutes les catégories, triées par le backend.

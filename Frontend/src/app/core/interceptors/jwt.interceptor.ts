@@ -15,8 +15,8 @@ export const jwtInterceptor: HttpInterceptorFn = (request, next) => {
   const token = authService.getToken();
 
   // Évite d’envoyer notre token à une autre API ou à un autre domaine.
-  const isBackendRequest = request.url.startsWith('http://localhost:3000/api/');
-  const isAuthenticationRequest = request.url.startsWith('http://localhost:3000/api/auth/');
+  const isBackendRequest = request.url.startsWith('/api/');
+  const isAuthenticationRequest = request.url.startsWith('/api/auth/');
 
   if (!isBackendRequest) {
     return next(request);

@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: eventhub-reservation-platform
+    runtime: node
+    region: frankfurt
+    plan: free
+    buildCommand: npm ci --prefix Backend && npm ci --prefix Frontend && npm run build --prefix Frontend
+    startCommand: npm start --prefix Backend
+    healthCheckPath: /api/health
+    autoDeployTrigger: off
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: eventhub-postgres
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 24h
+      - key: SEED_DEMO_DATA
+        value: "true"
+      - key: DEMO_SEED_PASSWORD
+        generateValue: true
+      - key: DEMO_ADMIN_EMAIL
+        value: admin@eventhub-demo.test
+      - key: DEMO_ADMIN_PASSWORD
+        sync: false
+
+databases:
+  - name: eventhub-postgres
+    databaseName: eventhub
+    user: eventhub
+    region: frankfurt
+    plan: free
+    ipAllowList: []

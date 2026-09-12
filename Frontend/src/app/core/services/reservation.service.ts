@@ -16,8 +16,8 @@ import {
 export class ReservationService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/api/reservations';
-  private readonly evenementApiUrl = 'http://localhost:3000/api/events';
+  private readonly apiUrl = '/api/reservations';
+  private readonly evenementApiUrl = '/api/events';
 
   getMesReservations(): Observable<Reservation[]> {
     return this.http.get<Reservation[]>(this.apiUrl);

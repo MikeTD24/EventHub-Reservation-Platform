@@ -16,7 +16,7 @@ import { Utilisateur } from '../models/utilisateur.model';
 export class AuthService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/api/auth';
+  private readonly apiUrl = '/api/auth';
 
   private readonly tokenKey = 'eventhub_token';
   private readonly utilisateurKey = 'eventhub_utilisateur';
