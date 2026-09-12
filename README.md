@@ -26,6 +26,10 @@ La base neuve est automatiquement alimentée avec plusieurs catégories et évé
 
 _Agenda public : événements terminés, complets et disponibles, avec filtres dynamiques._
 
+![Administration EventHub avec statistiques et gestion des événements](docs/screenshots/admin-dashboard.png)
+
+_Administration : indicateurs globaux, taux de remplissage et gestion complète des événements._
+
 ## Fonctionnalités
 
 ### Visiteur et utilisateur
